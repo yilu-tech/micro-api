@@ -45,7 +45,7 @@
         
         $uri 
         1. center/brand/list     center作为模块名在config/micro.php中配置基础地址
-        2. http://baidu.com      直接请求这个地址 
+        2. http://baidu.com      直接请求这个地址. 
         
   ###返回
         
@@ -63,4 +63,5 @@
             MicroApiRequestException->data()   
             MicroApiRequestException->getMessage()
             MicroApiRequestException->getMessage()
+        
         

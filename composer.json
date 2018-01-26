@@ -1,0 +1,22 @@
+{
+  "name": "yilu/micro-api",
+  "description": "laravel validation",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "yilu",
+      "email": "yilu@yilu-tech.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.6.4",
+    "guzzlehttp/guzzle": "^6.2@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Yilu\\MicroApi\\": "src/"
+    }
+  }
+}

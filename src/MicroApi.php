@@ -58,14 +58,14 @@ class MicroApi
             $options['json'] = $data;
         }
 
-        \MicroApi::log()->debug('----------------------------------------');
-        \MicroApi::log()->debug('----------------新请求-------------------');
-        \MicroApi::log()->debug('----------------------------------------');
-        \MicroApi::log()->debug("Method:$method,  请求地址 $url, 数据 ", $data);
+        $this->log()->debug('----------------------------------------');
+        $this->log()->debug('----------------新请求-------------------');
+        $this->log()->debug('----------------------------------------');
+        $this->log()->debug("Method:$method,  请求地址 $url, 数据 ", $data);
         try {
             $response = $this->client->request($method, $url, $options);
         } catch (GuzzleRequestException $e) {
-            throw new MicroApiRequestException($e);
+            throw new MicroApiRequestException($e,$this);
         }
         return $response;
     }

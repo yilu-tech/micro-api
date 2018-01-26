@@ -10,14 +10,16 @@ class MicroApiRequestException extends \Exception {
     private $body;
     private $error_data;
     private $statusCode;
+    private $micro;
 
-    public function __construct(GuzzleRequestException $e)
+    public function __construct(GuzzleRequestException $e,MicroApi $micro)
     {
         $this->guzzleException = $e;
+        $this->micro = $micro;
 
         $this->guzzleResponse = $e->getResponse();
-        \MicroApi::log()->debug("guzzle原始错误:".$e->getMessage());
-        \MicroApi::log()->debug('code',$e->getTrace());
+        $this->micro->log()->debug("guzzle原始错误:".$e->getMessage());
+        $this->micro->log()->debug('code',$e->getTrace());
         if(!$e->hasResponse()){ // 如果没有响应
             return parent::__construct($e->getMessage(),$e->getCode());
         }

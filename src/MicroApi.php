@@ -58,7 +58,7 @@ class MicroApi{
         try{
             $response = $this->client->request($method, $url,$options);
         }catch (GuzzleRequestException $e){
-            throw new MicroApiRequestException($e);
+            throw new MicroApiRequestException($e,$this);
         }
         return $response;
     }

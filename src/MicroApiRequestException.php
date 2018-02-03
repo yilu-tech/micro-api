@@ -11,6 +11,7 @@ class MicroApiRequestException extends \Exception {
     private $error_data;
     private $statusCode;
     private $micro;
+    private $debug_data;
 
     public function __construct(GuzzleRequestException $e,MicroApi $micro)
     {
@@ -20,6 +21,15 @@ class MicroApiRequestException extends \Exception {
         $this->guzzleResponse = $e->getResponse();
         $this->micro->log()->debug("guzzle原始错误:".$e->getMessage());
         $this->micro->log()->debug('code',$e->getTrace());
+
+        $this->debug_data['_request'] = (array) $e->getRequest();
+        $this->debug_data['_response'] = (array) $e->getResponse();
+        $this->debug_data['_getTrace'] = (array) $e->getTrace();
+        $this->debug_data['_message'] = (array) $e->getMessage();
+
+
+
+
         if(!$e->hasResponse()){ // 如果没有响应
             return parent::__construct($e->getMessage(),$e->getCode());
         }
@@ -42,6 +52,7 @@ class MicroApiRequestException extends \Exception {
             $this->error_data = $body['data'];
         }
 
+
         return parent::__construct($msg,$this->statusCode);
     }
 
@@ -52,12 +63,17 @@ class MicroApiRequestException extends \Exception {
 
     public function getResponse()
     {
-        return response()->json([
+        $data = [
             'status' => -1,
             'cause' => $this->getMessage(),
             'type' => 'micro_api_error@'.$this->body['type'],
             'data' => $this->error_data
-        ], $this->statusCode); //直接返回服务方的状态码
+        ];
+        if(config('app.debug')){
+            $data['debug'] = $this->debug_data;
+        }
+        return response()->json($data, $this->statusCode); //直接返回服务方的状态码
+
     }
 
 }

@@ -20,7 +20,7 @@ class MicroApiRequestException extends \Exception {
 
         $this->guzzleResponse = $e->getResponse();
         $this->micro->log()->debug("guzzle原始错误:".$e->getMessage());
-        $this->micro->log()->debug('code',$e->getTrace());
+        // $this->micro->log()->debug('code',$e->getTrace());
 
         $this->debug_data['_request'] = (array) $e->getRequest();
         $this->debug_data['_response'] = (array) $e->getResponse();

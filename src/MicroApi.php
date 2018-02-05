@@ -50,16 +50,24 @@ class MicroApi{
         }else{
             $options['json'] = $data;
         }
-
-        $this->log()->debug('----------------------------------------');
-        $this->log()->debug('----------------新请求-------------------');
-        $this->log()->debug('----------------------------------------');
-        $this->log()->debug("Method:$method,  请求地址 $url, 数据 ", $data);
+        $startTiem = microtime(true);
+        $this->log()->debug("#");
+        $this->log()->debug("#");
+        $this->log()->debug("#");
+        $this->log()->debug('---------------新请求-------------------');
+        $this->log()->debug("--$url---------------------");
+        $this->log()->debug("Method:$method,  请求地址 $url");
+        $this->log()->debug('数据 ',$data);
         try{
             $response = $this->client->request($method, $url,$options);
         }catch (GuzzleRequestException $e){
             throw new MicroApiRequestException($e,$this);
         }
+        $endTime = microtime(true);
+        $runTime = ceil(($endTime-$startTiem) * 1000);
+        $this->log()->debug("--$url---------------------");
+        $this->log()->debug("--执行时间:$runTime ms---------------");
+        $this->log()->debug("----------------请求结束--------------------");
         return $response;
     }
 

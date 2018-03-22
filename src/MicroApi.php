@@ -60,6 +60,7 @@ class MicroApi{
         $this->log()->debug('数据 ',$data);
         try{
             $response = $this->client->request($method, $url,$options);
+            $this->log()->debug('数据 ',json_decode($response->getBody()->__toString(), 1));
         }catch (GuzzleRequestException $e){
             throw new MicroApiRequestException($e,$this);
         }

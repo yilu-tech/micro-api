@@ -6,7 +6,8 @@ namespace Yilu\MicroApi;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp;
 
-class MicroApiResponse{
+class MicroApiResponse
+{
     protected $res;
 
     function __construct(Response $res)
@@ -22,7 +23,7 @@ class MicroApiResponse{
         if ($jsonString && !empty($jsonString)) {
 
             $body = \GuzzleHttp\json_decode($jsonString, true);
-            if (isset($body['data'])) { //解决原PHP数据格式
+            if (array_key_exists('data', $body)) { //解决原PHP数据格式
                 $data = $body["data"];
             } else { //解析java的数据返回
                 $data = $body;
@@ -32,11 +33,10 @@ class MicroApiResponse{
         return $data;
     }
 
-    function get(String $key){
+    function get(String $key)
+    {
 
     }
-
-
 
 
 }

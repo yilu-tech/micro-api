@@ -50,7 +50,10 @@ class MicroApiRequestException extends \Exception {
 
         if(isset($body['data'])){
             $this->error_data = $body['data'];
+        }else{
+            $this->error_data = $body;  //处理非内部体系的数据返回格式
         }
+
 
 
         return parent::__construct($msg,$this->statusCode);

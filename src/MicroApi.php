@@ -92,7 +92,7 @@ class MicroApi
 
     function post(String $uri, Array $data = [])
     {
-        return new MicroApiResponse($this->runRequest('POST', $data, $data));
+        return new MicroApiResponse($this->runRequest('POST', $uri, $data));
     }
 
     function put(String $uri, Array $data = [])

@@ -46,17 +46,10 @@ class MicroApi
         return $url;
     }
 
-    private function runRequest($method, $uri, $data)
+    private function runRequest($method, $uri, $options)
     {
         $url = $this->makeUrl($uri);
-        $request = new Request($method, $url);
-        $options = [];
 
-        if (isset($data['form_params'])) {
-            $options = array_merge($options, $data);
-        } else {
-            $options['json'] = $data;
-        }
         $startTiem = microtime(true);
         $this->log()->debug("#");
         $this->log()->debug("#");
@@ -64,7 +57,7 @@ class MicroApi
         $this->log()->debug('---------------新请求-------------------');
         $this->log()->debug("--$url---------------------");
         $this->log()->debug("Method:$method,  请求地址 $url");
-        $this->log()->debug('数据 ', $data);
+        $this->log()->debug('数据 ', $options);
         try {
             $response = $this->client->request($method, $url, $options);
             $this->log()->debug('数据 ', json_decode($response->getBody()->__toString(), 1));
@@ -83,32 +76,37 @@ class MicroApi
 
     function get(String $uri, Array $params = [], $options = [])
     {
-//        $uri = $uri ."?". http_build_query( $params );
-        $options['query'] = $params;
+        if (count($params)) {
+            $uri .= '?' . http_build_query($params);
+        }
         $res = $this->runRequest('GET', $uri, $options);
         return new MicroApiResponse($res);
     }
 
     function post(String $uri, Array $data = [], $options = [])
     {
+        $options['json'] = $data;
         $res = $this->runRequest('POST', $uri, $data);
         return new MicroApiResponse($res);
     }
 
     function put(String $uri, Array $data = [])
     {
+        $options['json'] = $data;
         $res = $this->runRequest('PUT', $uri, $data);
         return new MicroApiResponse($res);
     }
 
     function patch(String $uri, Array $data = [])
     {
+        $options['json'] = $data;
         $res = $this->runRequest('PATCH', $uri, $data);
         return new MicroApiResponse($res);
     }
 
     function delete(String $uri, Array $params = [])
     {
+        $options['json'] = $data;
         $res = $this->runRequest('DELETE', $uri, $params);
         return new MicroApiResponse($res);
     }

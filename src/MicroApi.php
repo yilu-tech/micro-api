@@ -46,9 +46,17 @@ class MicroApi
         return $url;
     }
 
-    private function runRequest($method, $uri, $options)
+    private function runRequest($method, $uri, $data)
     {
         $url = $this->makeUrl($uri);
+
+        if (array_key_exists('form_params', $data)) {
+            $options = $data;
+        } elseif (strtoupper($method) == 'GET' || strtoupper($method) == 'DELETE') {
+            $options = ['query' => $data];
+        } else {
+            $options = ['json' => $data];
+        }
 
         $startTiem = microtime(true);
         $this->log()->debug("#");
@@ -74,41 +82,35 @@ class MicroApi
 
     /**************sync***************/
 
-    function get(String $uri, Array $params = [], $options = [])
+    function get(String $uri, Array $params = [])
     {
-        if (count($params)) {
-            $uri .= '?' . http_build_query($params);
-        }
-        $res = $this->runRequest('GET', $uri, $options);
-        return new MicroApiResponse($res);
+//        if (count($params)) {
+//            $uri .= '?' . http_build_query($params);
+//        }
+        return new MicroApiResponse($this->runRequest('GET', $uri, $params));
     }
 
-    function post(String $uri, Array $data = [], $options = [])
+    function post(String $uri, Array $data = [])
     {
-        $options['json'] = $data;
-        $res = $this->runRequest('POST', $uri, $data);
-        return new MicroApiResponse($res);
+        return new MicroApiResponse($this->runRequest('POST', $data, $data));
     }
 
     function put(String $uri, Array $data = [])
     {
-        $options['json'] = $data;
-        $res = $this->runRequest('PUT', $uri, $data);
-        return new MicroApiResponse($res);
+        return new MicroApiResponse($this->runRequest('PUT', $uri, $data));
     }
 
     function patch(String $uri, Array $data = [])
     {
-        $options['json'] = $data;
-        $res = $this->runRequest('PATCH', $uri, $data);
-        return new MicroApiResponse($res);
+        return new MicroApiResponse($this->runRequest('PATCH', $uri, $data));
     }
 
     function delete(String $uri, Array $params = [])
     {
-        $options['json'] = $data;
-        $res = $this->runRequest('DELETE', $uri, $params);
-        return new MicroApiResponse($res);
+//        if (count($params)) {
+//            $uri .= '?' . http_build_query($params);
+//        }
+        return new MicroApiResponse($this->runRequest('DELETE', $uri, $params));
     }
 
     /*************async*************/

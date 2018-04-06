@@ -41,7 +41,7 @@ class MicroApiRequestException extends \Exception {
          * 400 业务错误 BusinessException
          * */
 
-        if($this->statusCode == 401 || $this->statusCode == 400){
+        if(($this->statusCode == 401 || $this->statusCode == 400) && isset($body['cause'])){
             $msg = $body['cause'];
         }
         else{

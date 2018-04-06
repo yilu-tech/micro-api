@@ -22,7 +22,10 @@ class MicroApi
     public function __construct()
     {
         $this->log = new MicroLog();
-        $this->headers = ['Content-Type' => 'application/json'];
+        $this->headers = [
+            'Content-Type' => 'application/json',
+            'Api-Auth-Type' => 'microservice'
+            ];
         $this->options['headers'] = $this->headers;
         $this->client = new \GuzzleHttp\Client($this->options);
     }

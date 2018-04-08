@@ -24,8 +24,8 @@ class MicroApi
         $this->log = new MicroLog();
         $this->headers = [
             'Content-Type' => 'application/json',
-            'Api-Auth-Type' => 'microservice'
-            ];
+            'Auth-Type' => 'microservice'
+        ];
         $this->options['headers'] = $this->headers;
         $this->client = new \GuzzleHttp\Client($this->options);
     }

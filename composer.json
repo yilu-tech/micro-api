@@ -18,5 +18,12 @@
     "psr-4": {
       "YiluTech\\MicroApi\\": "src/"
     }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "YiluTech\\MicroApi\\MicroApiServiceProvider"
+      ]
+    }
   }
 }

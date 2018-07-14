@@ -2,81 +2,54 @@
 
 namespace Yilu\MicroApi;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
-class MicroApiRequestException extends \Exception {
-    private $guzzleException;
-    private $guzzleResponse;
-    private $body;
-    private $error_data;
-    private $statusCode;
-    private $micro;
-    private $debug_data;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
-    public function __construct(GuzzleRequestException $e,MicroApi $micro)
+class MicroApiRequestException extends HttpException {
+
+    public $body;
+
+    public function __construct(GuzzleRequestException $e = null,MicroApi $microApi)
     {
-        $this->guzzleException = $e;
-        $this->micro = $micro;
-
-        $this->guzzleResponse = $e->getResponse();
-        $this->micro->log()->debug("guzzle原始错误:".$e->getMessage());
-        // $this->micro->log()->debug('code',$e->getTrace());
-
-        $this->debug_data['_request'] = (array) $e->getRequest();
-        $this->debug_data['_response'] = (array) $e->getResponse();
-        $this->debug_data['_getTrace'] = (array) $e->getTrace();
-        $this->debug_data['_message'] = (array) $e->getMessage();
-
-
-
-
-        if(!$e->hasResponse()){ // 如果没有响应
-            return parent::__construct($e->getMessage(),$e->getCode());
+        $url = $microApi->getUrl();
+        $previous = null;
+        if($e === null){
+            $msg = "MicroApi Protocol not defined for ${url}.";
         }
-        $this->statusCode = $this->guzzleResponse->getStatusCode();
-        $this->body= $body = json_decode($this->guzzleResponse->getBody(),true);
-
-        /*
-         * 401 验证错误 AuthenticationException
-         * 400 业务错误 BusinessException
-         * */
-
-        if(($this->statusCode == 401 || $this->statusCode == 400) && isset($body['cause'])){
-            $msg = $body['cause'];
+        elseif($e instanceof ConnectException){
+            $msg = "MicroApi can not connect: ${url}";
+            $code = $e->getCode();
+            $previous = $e->getPrevious();
+        }
+        elseif($e instanceof RequestException && $e->getCode() == 0){
+            $msg = "MicroApi cURL error url malformed: ${url}";
+            $code = $e->getCode();
+            $previous = $e->getPrevious();
         }
         else{
+            $this->body = $this->parseBody($e);
             $msg = $e->getMessage();
         }
+        
+        return parent::__construct(502,$msg,$previous);
+    }
 
-        if(isset($body['data'])){
-            $this->error_data = $body['data'];
-        }else{
-            $this->error_data = $body;  //处理非内部体系的数据返回格式
+    protected function parseBody($e){
+        $body = $e->getResponse()->getBody()->__toString();
+        if($this->isJSON($body)){
+            $body = json_decode($e->getResponse()->getBody()->__toString(), 1);
         }
-
-
-
-        return parent::__construct($msg,$this->statusCode);
+        return $body;
     }
 
-
-    public function data(){
-        return $this->error_data;
+    public function getBody(){
+        return $this->body;
     }
 
-    public function getResponse()
-    {
-        $data = [
-            'status' => -1,
-            'cause' => $this->getMessage(),
-            'type' => 'micro_api_error@'.$this->body['type'],
-            'data' => $this->error_data
-        ];
-        if(config('app.debug')){
-            $data['debug'] = $this->debug_data;
-        }
-        return response()->json($data, $this->statusCode); //直接返回服务方的状态码
-
+    protected  function isJSON($string){
+        return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
     }
-
 }

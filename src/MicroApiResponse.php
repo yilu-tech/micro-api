@@ -4,39 +4,25 @@ namespace Yilu\MicroApi;
 
 
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp;
 
-class MicroApiResponse
+class MicroApiResponse extends Response
 {
-    protected $res;
+    private $res;
+    private $contents;
 
     function __construct(Response $res)
     {
-        $this->res = $res;
+        $this->contents = $res->getBody()->getContents();
+        parent::__construct($res->getStatusCode(),$res->getHeaders(),$res->getBody());
+    }
+    
+    public function getContents(){
+        return $this->contents;
     }
 
-    function data()
-    {
-        $data = null;
-        $jsonString = $this->res->getBody()->__toString();
-
-        if ($jsonString && !empty($jsonString)) {
-
-            $body = \GuzzleHttp\json_decode($jsonString, true);
-            if (array_key_exists('data', $body)) { //解决原PHP数据格式
-                $data = $body["data"];
-            } else { //解析java的数据返回
-                $data = $body;
-            }
-        }
-
+    public function getJson(){
+        $data = json_decode($this->contents, true);
         return $data;
     }
-
-    function get(String $key)
-    {
-
-    }
-
 
 }

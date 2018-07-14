@@ -13,18 +13,23 @@ use Yilu\MicroApi\MicroLog;
 
 class MicroApi
 {
-    protected $baseUrl = '';
     private $client;
     private $headers;
     private $options;
+    private $url;
+    private $method;
+    private $response;
+
     private $log;
+
 
     public function __construct()
     {
         $this->log = new MicroLog();
         $this->headers = [
             'Content-Type' => 'application/json',
-            'Auth-Type' => 'microservice'
+            'Auth-Type' => 'microservice',
+            'Accept' => 'application/json',
         ];
         $this->options['headers'] = $this->headers;
         $this->client = new \GuzzleHttp\Client($this->options);
@@ -34,86 +39,94 @@ class MicroApi
     {
         return $this->log;
     }
+    public function getUrl(){
+        return $this->url;
+    }
 
     private function makeUrl($uri)
     {
-        $pathArray = explode('/', $uri);
-        $module = $pathArray[0];
-        $moduleName = "micro.services.$module";
-        if (\Config::has($moduleName)) { //模块名称存在，从配置文件读取地址
-            $url = config("micro.services.$module") . "/$uri";
-        } else {//否则填写的内容直接作为地址
-            $url = $uri;
+        //如果不是完全的url，就拼接网关
+        if((stripos($uri,'http://') === false  && stripos($uri,'https://') === false) && config("micro.api_gateway")){
+            $this->url = config('micro.api_gateway').$uri;
+        }else{
+            $this->url = $uri;
         }
 
-        return $url;
+        //检查是否url是否有定义完整的请求协议
+        if(stripos($this->url,'http://')  === false  && stripos($this->url,'https://')  === false){
+            throw new \Yilu\MicroApi\MicroApiRequestException(null,$this);
+        }
+
+        return $this->url;
     }
 
-    private function runRequest($method, $uri, $data)
-    {
-        $url = $this->makeUrl($uri);
 
-        if (array_key_exists('form_params', $data)) {
-            $options = $data;
-        } elseif (strtoupper($method) == 'GET' || strtoupper($method) == 'DELETE') {
-            $options = ['query' => $data];
-        } else {
-            $options = ['json' => $data];
-        }
+    function query($query){
+        $this->options['query'] = $query;
+        return $this;
+    }
+    function json($data){
+        $this->options['json'] = $data;
+        return $this;
+    }
+    function form_params($data){
+        $this->options['form_params'] = $data;
+        return $this;
+    }
 
-        $startTiem = microtime(true);
-        $this->log()->debug("#");
-        $this->log()->debug("#");
-        $this->log()->debug("#");
-        $this->log()->debug('---------------新请求-------------------');
-        $this->log()->debug("--$url---------------------");
-        $this->log()->debug("Method:$method,  请求地址 $url");
-        $this->log()->debug('数据 ', $options);
+    function run(){
+
         try {
-            $response = $this->client->request($method, $url, $options);
-            $this->log()->debug('数据 ', json_decode($response->getBody()->__toString(), 1));
+            $this->beforeLog($this->url,$this->method,$this->options);
+
+            $response = $this->client->request($this->method, $this->url, $this->options);
+
+            $this->response =  new MicroApiResponse($response);
+
+            $this->afterLog($this->url,$this->method,$this->options);
         } catch (GuzzleRequestException $e) {
             throw new MicroApiRequestException($e, $this);
         }
-        $endTime = microtime(true);
-        $runTime = ceil(($endTime - $startTiem) * 1000);
-        $this->log()->debug("--$url---------------------");
-        $this->log()->debug("--执行时间:$runTime ms---------------");
-        $this->log()->debug("----------------请求结束--------------------");
-        return $response;
+
+        return $this->response;
     }
+
 
     /**************sync***************/
 
-    function get(String $uri, Array $params = [])
+    function get(String $uri)
     {
-//        if (count($params)) {
-//            $uri .= '?' . http_build_query($params);
-//        }
-        return new MicroApiResponse($this->runRequest('GET', $uri, $params));
+        $this->method = 'GET';
+        $this->url = $this->makeUrl($uri);
+        return $this;
     }
 
-    function post(String $uri, Array $data = [])
+    function post(String $uri)
     {
-        return new MicroApiResponse($this->runRequest('POST', $uri, $data));
+        $this->method = 'POST';
+        $this->url = $this->makeUrl($uri);
+        return $this;
     }
 
-    function put(String $uri, Array $data = [])
+    function put(String $uri)
     {
-        return new MicroApiResponse($this->runRequest('PUT', $uri, $data));
+        $this->method = 'PUT';
+        $this->url = $this->makeUrl($uri);
+        return $this;
     }
 
-    function patch(String $uri, Array $data = [])
+    function patch(String $uri)
     {
-        return new MicroApiResponse($this->runRequest('PATCH', $uri, $data));
+        $this->method = 'PATCH';
+        $this->url = $this->makeUrl($uri);
+        return $this;
     }
 
-    function delete(String $uri, Array $params = [])
+    function delete(String $uri)
     {
-//        if (count($params)) {
-//            $uri .= '?' . http_build_query($params);
-//        }
-        return new MicroApiResponse($this->runRequest('DELETE', $uri, $params));
+        $this->method = 'DELETE';
+        $this->url = $this->makeUrl($uri);
+        return $this;
     }
 
     /*************async*************/
@@ -151,5 +164,23 @@ class MicroApi
             $ret[$key] = new MicroApiResponse($item);
         }
         return $ret;
+    }
+
+    protected function beforeLog($url,$method,$options){
+        $this->startTiem = microtime(true);
+        $this->log()->debug('---------------new request-------------------');
+        $this->log()->debug("url: $url");
+        $this->log()->debug("Method:$method,  请求地址 $url");
+        $this->log()->debug('数据 ', $options);
+
+    }
+    protected function afterLog($url,$method,$options){
+        $this->log()->debug('数据 ',$this->response->getJson());
+        $endTime = microtime(true);
+        $runTime = ceil(($endTime - $this->startTiem) * 1000);
+        $this->log()->debug("--$url---------------------");
+        $this->log()->debug("--执行时间:$runTime ms---------------");
+        $this->log()->debug("----------------请求结束--------------------");
+
     }
 }

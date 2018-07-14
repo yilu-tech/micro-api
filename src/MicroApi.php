@@ -14,7 +14,6 @@ use YiluTech\MicroApi\MicroLog;
 class MicroApi
 {
     private $client;
-    private $headers;
     private $options;
     private $url;
     private $method;
@@ -26,12 +25,8 @@ class MicroApi
     public function __construct()
     {
         $this->log = new MicroLog();
-        $this->headers = [
-            'Content-Type' => 'application/json',
-            'Auth-Type' => 'microservice',
-            'Accept' => 'application/json',
-        ];
-        $this->options['headers'] = $this->headers;
+        $this->options['headers'] = config('micro.headers') ? config('micro.headers') : [];
+
         $this->client = new \GuzzleHttp\Client($this->options);
     }
 

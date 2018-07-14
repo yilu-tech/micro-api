@@ -1,15 +1,15 @@
 <?php
 
-namespace Yilu\MicroApi;
+namespace YiluTech\MicroApi;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use Yilu\MicroApi\MicroApiResponse;
+use YiluTech\MicroApi\MicroApiResponse;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 use GuzzleHttp\Promise;
-use Yilu\MicroApi\MicroApiRequestException;
-use Yilu\MicroApi\MicroLog;
+use YiluTech\MicroApi\MicroApiRequestException;
+use YiluTech\MicroApi\MicroLog;
 
 class MicroApi
 {

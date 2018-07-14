@@ -1,9 +1,9 @@
 <?php
 
-namespace Yilu\MicroApi;
+namespace YiluTech\MicroApi;
 
 use Illuminate\Support\ServiceProvider;
-use Yilu\MicroApi\MicroApi;
+use YiluTech\MicroApi\MicroApi;
 
 class MicroApiServiceProvider extends ServiceProvider
 {

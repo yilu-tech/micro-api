@@ -1,6 +1,6 @@
 <?php
 
-namespace Yilu\MicroApi;
+namespace YiluTech\MicroApi;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;

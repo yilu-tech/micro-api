@@ -1,6 +1,6 @@
 <?php
 
-namespace Yilu\MicroApi;
+namespace YiluTech\MicroApi;
 
 
 use GuzzleHttp\Psr7\Response;

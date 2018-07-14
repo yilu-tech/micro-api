@@ -1,5 +1,5 @@
 <?php
-namespace Yilu\MicroApi;
+namespace YiluTech\MicroApi;
 use Illuminate\Support\Facades\Facade;
 
 class MicroApiFacade extends Facade

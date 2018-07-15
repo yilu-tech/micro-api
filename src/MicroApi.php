@@ -49,7 +49,7 @@ class MicroApi
 
         //检查是否url是否有定义完整的请求协议
         if(stripos($this->url,'http://')  === false  && stripos($this->url,'https://')  === false){
-            throw new \Yilu\MicroApi\MicroApiRequestException(null,$this);
+            throw new MicroApiRequestException(null,$this);
         }
 
         return $this->url;
@@ -170,7 +170,7 @@ class MicroApi
 
     }
     protected function afterLog($url,$method,$options){
-        $this->log()->debug('数据 ',$this->response->getJson());
+        $this->log()->debug('数据 ', [$this->response->getJson()]);
         $endTime = microtime(true);
         $runTime = ceil(($endTime - $this->startTiem) * 1000);
         $this->log()->debug("--$url---------------------");

@@ -3,7 +3,7 @@
         <?php
         
         namespace Center\Controllers;
-        use Yilu\MicroApi\MicroApi;
+        use YiluTech\MicroApi\MicroApi;
         class BrandController extends Controller
         {
             function list(MicroApi $microApi){
@@ -13,7 +13,7 @@
     
 ###使用方法2
 
-        \MicroApi::get('store/create',[]);
+        \MicroApi::get('store/create')->query([])->run();
          
       
       
@@ -22,7 +22,7 @@
         public function testGet(){
     
             try{
-                $res = \MicroApi::get('/center/brand/list',[]);
+                $res = \MicroApi::get('/center/brand/list')->run();
                 dump($res->data());  //获取数据
             }catch (MicroApiRequestException $e){
                 var_dump($e->getMessage()); //错误描述
@@ -37,11 +37,11 @@
  
  ###参数说明
 
-        \MicroApi::get($uri,$params);
-        \MicroApi::post($uri,$data);
-        \MicroApi::put($uri,$data);
-        \MicroApi::patch($uri,$data);
-        \MicroApi::delete($uri,$params);
+        \MicroApi::get($uri)->run();
+        \MicroApi::post($uri)->json([])->run();
+        \MicroApi::put($uri)->run();
+        \MicroApi::patch($uri)->run();
+        \MicroApi::delete($uri)->run();
         
         $uri 
         1. center/brand/list     center作为模块名在config/micro.php中配置基础地址
@@ -53,11 +53,12 @@
         {status:1,data:{}}
         
         MicroApiResponse
-            MicroApiResponse->data()     获取  data中值  
+            MicroApiResponse->getJson()
+            MicroApiResponse->getContents()      
+
         
         
         失败: 
-        {status:-1,cause;"错误信息",type:'',data:{}}
         
         MicroApiRequestException
             MicroApiRequestException->data()   

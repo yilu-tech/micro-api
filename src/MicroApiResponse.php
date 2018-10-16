@@ -21,8 +21,12 @@ class MicroApiResponse extends Response
     }
 
     public function getJson(){
-        $data = json_decode($this->contents, true);
-        return $data;
+        $result = json_decode($this->contents, true);
+        return $result;
+    }
+
+    public function getData(){
+        return $this->getJson()['data'];
     }
 
 }

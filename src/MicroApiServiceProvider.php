@@ -14,7 +14,7 @@ class MicroApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton("MicroApi", function ($app) {
+        $this->app->bind("MicroApi", function ($app) {
             return new MicroApi();
         });
     }

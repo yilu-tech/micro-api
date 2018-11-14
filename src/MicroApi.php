@@ -34,51 +34,59 @@ class MicroApi
     {
         return $this->log;
     }
-    public function getUrl(){
+
+    public function getUrl()
+    {
         return $this->url;
     }
 
     private function makeUrl($uri)
     {
         //如果不是完全的url，就拼接网关
-        if((stripos($uri,'http://') === false  && stripos($uri,'https://') === false) && config("micro.api_gateway")){
-            $this->url = config('micro.api_gateway').$uri;
-        }else{
+        if ((stripos($uri, 'http://') === false && stripos($uri, 'https://') === false) && config("micro.api_gateway")) {
+            $this->url = rtrim(config('micro.api_gateway'), '/') . '/' . $uri;
+        } else {
             $this->url = $uri;
         }
 
         //检查是否url是否有定义完整的请求协议
-        if(stripos($this->url,'http://')  === false  && stripos($this->url,'https://')  === false){
-            throw new MicroApiRequestException(null,$this);
+        if (stripos($this->url, 'http://') === false && stripos($this->url, 'https://') === false) {
+            throw new MicroApiRequestException(null, $this);
         }
 
         return $this->url;
     }
 
 
-    function query($query){
+    function query($query)
+    {
         $this->options['query'] = $query;
         return $this;
     }
-    function json($data){
+
+    function json($data)
+    {
         $this->options['json'] = $data;
         return $this;
     }
-    function form_params($data){
+
+    function form_params($data)
+    {
         $this->options['form_params'] = $data;
         return $this;
     }
 
-    function run(){
+    function run()
+    {
 
         try {
-            $this->beforeLog($this->url,$this->method,$this->options);
+            $this->beforeLog($this->url, $this->method, $this->options);
 
             $response = $this->client->request($this->method, $this->url, $this->options);
 
-            $this->response =  new MicroApiResponse($response);
+            $this->response = new MicroApiResponse($response);
 
-            $this->afterLog($this->url,$this->method,$this->options);
+            $this->afterLog($this->url, $this->method, $this->options);
         } catch (GuzzleRequestException $e) {
             throw new MicroApiRequestException($e, $this);
         }
@@ -161,7 +169,8 @@ class MicroApi
         return $ret;
     }
 
-    protected function beforeLog($url,$method,$options){
+    protected function beforeLog($url, $method, $options)
+    {
         $this->startTiem = microtime(true);
         $this->log()->debug('---------------new request-------------------');
         $this->log()->debug("url: $url");
@@ -169,7 +178,9 @@ class MicroApi
         $this->log()->debug('数据 ', $options);
 
     }
-    protected function afterLog($url,$method,$options){
+
+    protected function afterLog($url, $method, $options)
+    {
         $this->log()->debug('数据 ', [$this->response->getJson()]);
         $endTime = microtime(true);
         $runTime = ceil(($endTime - $this->startTiem) * 1000);

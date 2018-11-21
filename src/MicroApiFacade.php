@@ -2,12 +2,16 @@
 namespace YiluTech\MicroApi;
 use Illuminate\Support\Facades\Facade;
 
+
+/**
+ * @method static \YiluTech\MicroApi\MicroApiRequestBuilder  get(string $url)
+ * @method static \YiluTech\MicroApi\MicroApiCoordinator  beginTransaction()
+ *
+ * @see \Illuminate\Cache\CacheManager
+ */
 class MicroApiFacade extends Facade
 {
-    /**
-     * 获取组件的注册名称。
-     *
-     * @return string
-     */
-    protected static function getFacadeAccessor() { return 'MicroApi'; }
+    protected static function getFacadeAccessor() {
+        return 'MicroApi';
+    }
 }

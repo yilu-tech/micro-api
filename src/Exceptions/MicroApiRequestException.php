@@ -1,19 +1,20 @@
 <?php
 
-namespace YiluTech\MicroApi;
+namespace YiluTech\MicroApi\Exceptions;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
+use YiluTech\MicroApi\Adapters\MicroApiHttpRequest;
 
 class MicroApiRequestException extends GuzzleRequestException {
 
     public $body;
 
-    public function __construct(GuzzleRequestException $e = null,MicroApi $microApi)
+    public function __construct(GuzzleRequestException $e = null,MicroApiHttpRequest $microApi)
     {
-        $url = $microApi->getUrl();
+        $url = $microApi->getBuiler()->getUrl();
 
         if($e === null){
             $this->message = "MicroApi Protocol not defined for ${url}.";

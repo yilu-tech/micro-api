@@ -3,7 +3,7 @@
 namespace YiluTech\MicroApi;
 
 use Illuminate\Support\ServiceProvider;
-use YiluTech\MicroApi\MicroApi;
+
 
 class MicroApiServiceProvider extends ServiceProvider
 {
@@ -14,8 +14,9 @@ class MicroApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind("MicroApi", function ($app) {
-            return new MicroApi();
+        $this->app->singleton("MicroApi", function ($app) {
+            return new MicroApiManager($app);
         });
+
     }
 }

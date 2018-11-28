@@ -16,18 +16,30 @@ use YiluTech\MicroApi\MicroApiResponse;
 class MicroApiHttpRequest extends MicroApiRequest
 {
 
-    public function run(){
+    public function run()
+    {
         try {
-
+            //请求基础信息
             $this->client = new \GuzzleHttp\Client([
                 'headers' => $this->builer->getGateway()->getHeaders()
             ]);
 
-            $response = $this->client->request($this->builer->getMethod(), $this->builer->getUrl());
+            $response = $this->client->request($this->builer->getMethod(), $this->builer->getUrl(),$this->builer->getOptions());
 
             $this->response = new MicroApiResponse($response);
         } catch (RequestException $e) {
-            throw new MicroApiRequestException($e, $this);
+            $url = $this->builer->getUrl();
+            if($e instanceof ConnectException){
+                $msg = "MicroApi can not connect: $url";
+            }
+            elseif($e instanceof RequestException && $e->getCode() == 0){
+                $msg = "MicroApi cURL error url malformed: $url";
+            }
+            else{
+                $msg = $e->getMessage();
+            }
+            
+            throw new MicroApiRequestException($msg,$e);
         }
 
         return $this->response;

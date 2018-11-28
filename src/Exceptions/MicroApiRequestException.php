@@ -8,27 +8,14 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 use YiluTech\MicroApi\Adapters\MicroApiHttpRequest;
 
-class MicroApiRequestException extends GuzzleRequestException {
-
-    public $body;
-
-    public function __construct(GuzzleRequestException $e = null,MicroApiHttpRequest $microApi)
+class MicroApiRequestException extends GuzzleRequestException  {
+    
+    public function __construct($msg,GuzzleRequestException $e = null)
     {
-        $url = $microApi->getBuiler()->getUrl();
+        if(!$e){
+            return $this->message = $msg;
+        }
 
-        if($e === null){
-            $this->message = "MicroApi Protocol not defined for ${url}.";
-            return;
-        }
-        elseif($e instanceof ConnectException){
-            $msg = "MicroApi can not connect: ${url}";
-        }
-        elseif($e instanceof RequestException && $e->getCode() == 0){
-            $msg = "MicroApi cURL error url malformed: ${url}";
-        }
-        else{
-            $msg = $e->getMessage();
-        }
         return parent::__construct($msg,$e->getRequest(),$e->getResponse(),$e->getPrevious());
     }
 

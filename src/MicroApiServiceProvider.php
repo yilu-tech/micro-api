@@ -21,10 +21,14 @@ class MicroApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        if(!class_exists('\MicroApi')){
+            class_alias(MicroApiFacade::class,'MicroApi');
+        }
+
         $this->app->singleton("MicroApi", function ($app) {
             return new MicroApiManager($app);
         });
-        class_alias(MicroApiFacade::class,'MicroApi');
+       
 
     }
 }

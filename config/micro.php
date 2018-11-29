@@ -5,7 +5,7 @@ return [
 
     'gateways' => [
         'default' =>[
-            'url' => env('GATEWAY_API', 'http://localhost'),
+            'url' => env('GATEWAY_URL', 'http://localhost'),
             'headers'=>[
             ]
         ]

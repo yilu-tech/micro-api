@@ -5,10 +5,6 @@ namespace YiluTech\MicroApi;
 
 
 
-use YiluTech\MicroApi\Exceptions\MicroApiException;
-use YiluTech\MicroApi\Transaction\MicroApiCoordinator;
-use YiluTech\MicroApi\Transaction\MicroApiTransaction;
-
 /**
  * @mixin \YiluTech\MicroApi\MicroApiRequestBuilder
  */
@@ -22,15 +18,6 @@ class MicroApiManager
 
 
     private $gateways = [];
-    private $requests = [];
-    private $queueRequests = [];
-    private $tccRequests = [];
-    private $coordinators = [];
-    /**
-     * 用于全局锁定事物
-     * @var \YiluTech\MicroApi\MicroApiTransaction
-     */
-    private $transaction;
 
     /**
      * 创建MicroApi实例
@@ -43,20 +30,6 @@ class MicroApiManager
         $this->app = $app;
     }
 
-    public function lock(MicroApiTransaction $transaction){
-        $this->transaction = $transaction;
-    }
-    public function unlock(){
-        $this->transaction = null;
-    }
-    public function isLock(){
-        return $this->transaction ? true : false;
-    }
-    public function getCurrentTransaction()
-    {
-        return $this->transaction;
-    }
-
 
     /**
      * 获取请求构造器
@@ -67,12 +40,7 @@ class MicroApiManager
     {
 
         $gatewayBuilder = $this->getGateway($name)->makeBuilder();
-
-
-        //如果默认调度器已经初始化事物，把默认事物信息加入网关对象
-        if($this->coordinator()->hasTransaction()){
-            $gatewayBuilder->setTransaction($this->coordinator()->getTransaction());
-        }
+        
 
         return $gatewayBuilder;
     }
@@ -101,45 +69,6 @@ class MicroApiManager
         return $config;
     }
 
-
-    /**
-     * 获取事物调度器
-     * @param string $name
-     * @return MicroApiCoordinator
-     */
-    public function coordinator($name = 'default'): MicroApiCoordinator
-    {
-
-
-        if(!isset($this->coordinators[$name])){
-            $this->coordinators[$name] = new MicroApiCoordinator($this,$name,$this->getCoordinatorConfig($name));
-        }
-        return $this->coordinators[$name];
-
-    }
-
-    /**
-     * 获取事物调度器配置
-     * @param $name
-     * @return array
-     */
-    private function getCoordinatorConfig($name) : array {
-        $config = $this->app['config']["micro.coordinators.$name"];
-        if(!$config){
-            throw new \InvalidArgumentException("MicroApi coordinator [{$name}] not configured.");
-        }
-        return $config;
-    }
-
-    /**
-     * 构造默认事物调度器
-     * 并开启默认事物
-     * @return mixed
-     */
-    public function beginTransaction()
-    {
-        return $this->coordinator()->beginTransaction();
-    }
 
 
     /**

@@ -3,6 +3,8 @@
 namespace YiluTech\MicroApi;
 
 use Illuminate\Support\ServiceProvider;
+use YiluTech\MicroApi\Transaction\MicroTransactionFacade;
+use YiluTech\MicroApi\Transaction\MicroTransactionManager;
 
 
 class MicroApiServiceProvider extends ServiceProvider
@@ -28,7 +30,16 @@ class MicroApiServiceProvider extends ServiceProvider
         $this->app->singleton("MicroApi", function ($app) {
             return new MicroApiManager($app);
         });
-       
+
+
+        if(!class_exists('\MicroTransaction')){
+            class_alias(MicroTransactionFacade::class,'MicroTransaction');
+        }
+
+        $this->app->singleton("MicroTransaction", function ($app) {
+            return new MicroTransactionManager($app);
+        });
+
 
     }
 }

@@ -37,17 +37,4 @@ class MicroApiGateway
     {
         return new MicroApiRequestBuilder($this);
     }
-
-
-
-    /**
-     * 通过动态方法构造RequestBuilder
-     * @param $method
-     * @param $parameters
-     * @return MicroApiRequestBuilder
-     */
-//    public function __call($method, $parameters)
-//    {
-//        return $this->makeBuilder()->$method(...$parameters);
-//    }
 }

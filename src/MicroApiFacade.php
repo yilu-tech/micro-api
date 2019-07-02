@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Facade;
 
 
 /**
+ * @method static \YiluTech\MicroApi\MicroApiManager  gateway(string $name)
  * @method static \YiluTech\MicroApi\MicroApiRequestBuilder  get(string $url)
  * @method static \YiluTech\MicroApi\MicroApiRequestBuilder  post(string $url)
  * @method static \YiluTech\MicroApi\MicroApiRequestBuilder  put(string $url)
  * @method static \YiluTech\MicroApi\MicroApiRequestBuilder  delete(string $url)
- * @method static \YiluTech\MicroApi\MicroApiCoordinator  beginTransaction()
  *
  * @see \Illuminate\Cache\CacheManager
  */

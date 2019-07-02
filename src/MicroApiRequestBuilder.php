@@ -15,7 +15,6 @@ use YiluTech\MicroApi\Adapters\MicroApiQueueRequest;
 use YiluTech\MicroApi\Adapters\MicroApiRequest;
 use YiluTech\MicroApi\Adapters\MicroApiTccRequest;
 use YiluTech\MicroApi\Exceptions\MicroApiRequestException;
-use YiluTech\MicroApi\Transaction\MicroApiTransaction;
 
 class MicroApiRequestBuilder
 {
@@ -24,7 +23,6 @@ class MicroApiRequestBuilder
     private $url;
     private $method;
     private $headers;
-    private $transaction;
     private $options = [];
 
 
@@ -35,27 +33,6 @@ class MicroApiRequestBuilder
     {
         $this->gateway = $microApiGateway;
     }
-
-    /**
-     * 获取当前builer的事物
-     * @return MicroApiTransaction
-     */
-    public function getTransaction():MicroApiTransaction
-    {
-        return $this->transaction;
-    }
-
-    /**
-     * 设置当前builer的事物
-     * @param MicroApiTransaction $transaction
-     */
-    public function setTransaction(MicroApiTransaction $transaction){
-        $this->transaction = $transaction;
-    }
-
-
-
-
 
 
     public function get(String $path):MicroApiRequestBuilder
@@ -142,21 +119,33 @@ class MicroApiRequestBuilder
 
     public function run()
     {
+        try {
+            //请求基础信息
+            $this->client = new \GuzzleHttp\Client([
+                'headers' => $this->getGateway()->getHeaders()
+            ]);
 
-        $request = new MicroApiHttpRequest($this);
-        return $request->run();
+            $response = $this->client->request($this->getMethod(), $this->getUrl(),$this->getOptions());
+
+            $this->response = new MicroApiResponse($response);
+        } catch (RequestException $e) {
+            $url = $this->getUrl();
+            if($e instanceof ConnectException){
+                $msg = "MicroApi can not connect: $url";
+            }
+            elseif($e instanceof RequestException && $e->getCode() == 0){
+                $msg = "MicroApi cURL error url malformed: $url";
+            }
+            else{
+                $msg = $e->getMessage();
+            }
+
+            throw new MicroApiRequestException($msg,$e);
+        }
+
+        return $this->response;
     }
 
-    public function queue():MicroApiQueueRequest
-    {
-        $request = new MicroApiQueueRequest($this);
-        return $request->run();
-    }
-
-    public function try(){
-        $request = new MicroApiTccRequest($this);
-        return $request->run();
-    }
 
     private function makeUrl($path)
     {

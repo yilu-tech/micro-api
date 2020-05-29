@@ -104,7 +104,8 @@ class MicroApiRequestBuilder
 
     public function getHeaders(): array
     {
-        return array_merge($this->getGateway()->getHeaders(), $this->headers);
+        $default = ["REAL-CLIENT-IP" => $this->getRealIp()];
+        return array_merge($default, $this->getGateway()->getHeaders(), $this->headers);
     }
 
     public function getGateway(): MicroApiGateway

@@ -181,4 +181,14 @@ class MicroApiRequestBuilder
         return $request;
     }
 
+    public function getRealIp()
+    {
+        if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+            return $_SERVER['HTTP_X_REAL_IP'];
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_IP'])) {
+            return strstr($_SERVER['HTTP_X_FORWARDED_IP'], ',', true);
+        }
+        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    }
 }

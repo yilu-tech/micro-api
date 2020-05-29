@@ -187,8 +187,8 @@ class MicroApiRequestBuilder
         if (isset($_SERVER['HTTP_X_REAL_IP'])) {
             return $_SERVER['HTTP_X_REAL_IP'];
         }
-        if (isset($_SERVER['HTTP_X_FORWARDED_IP'])) {
-            return strstr($_SERVER['HTTP_X_FORWARDED_IP'], ',', true);
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
         }
         return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     }

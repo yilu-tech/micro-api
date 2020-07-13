@@ -15,6 +15,7 @@ use YiluTech\MicroApi\Adapters\MicroApiQueueRequest;
 use YiluTech\MicroApi\Adapters\MicroApiRequest;
 use YiluTech\MicroApi\Adapters\MicroApiTccRequest;
 use YiluTech\MicroApi\Exceptions\MicroApiRequestException;
+use GuzzleHttp\HandlerStack;
 
 class MicroApiRequestBuilder
 {

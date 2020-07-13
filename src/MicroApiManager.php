@@ -4,6 +4,7 @@
 namespace YiluTech\MicroApi;
 
 
+use GuzzleHttp\Handler\MockHandler;
 
 /**
  * @mixin \YiluTech\MicroApi\MicroApiRequestBuilder
@@ -15,7 +16,7 @@ class MicroApiManager
      * @var \Illuminate\Foundation\Application
      */
     protected $app;
-
+    public $mocker;
 
     private $gateways = [];
 
@@ -52,6 +53,11 @@ class MicroApiManager
         }
         return $this->gateways[$name];
 
+    }
+
+    public function mock($mockers)
+    {
+      $this->mocker = new MockHandler($mockers)
     }
 
     /**

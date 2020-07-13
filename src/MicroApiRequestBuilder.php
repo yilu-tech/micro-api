@@ -126,11 +126,18 @@ class MicroApiRequestBuilder
 
     public function run()
     {
+        $options = [
+            'headers' => $this->getHeaders()
+        ];
+
+        if ($this->gateway->getManager()->mocker) {
+            $handlerStack = HandlerStack::create($this->gateway->getManager()->mocker);
+            $options['handler'] = $handlerStack;
+        }
+
         try {
             //请求基础信息
-            $this->client = new \GuzzleHttp\Client([
-                'headers' => $this->getHeaders()
-            ]);
+            $this->client = new \GuzzleHttp\Client($options);
 
             $response = $this->client->request($this->getMethod(), $this->getUrl(), $this->getOptions());
 

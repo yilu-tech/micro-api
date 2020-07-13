@@ -57,7 +57,7 @@ class MicroApiManager
 
     public function mock($mockers)
     {
-      $this->mocker = new MockHandler($mockers)
+      $this->mocker = new MockHandler($mockers);
     }
 
     /**

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lishu
- * Date: 2018/11/20
- * Time: 9:24 AM
- */
+
 namespace YiluTech\MicroApi\Contracts;
 use Illuminate\Http\Request;
 

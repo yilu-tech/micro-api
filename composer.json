@@ -2,11 +2,10 @@
   "name": "yilu-tech/micro-api",
   "description": "laravel validation",
   "type": "library",
-  "license": "MIT",
   "authors": [
     {
       "name": "yilu",
-      "email": "yilu@yilu-tech.com"
+      "email": "developer@yilu.co"
     }
   ],
   "minimum-stability": "dev",

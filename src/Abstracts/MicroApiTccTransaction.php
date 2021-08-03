@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lishu
- * Date: 2018/11/22
- * Time: 1:30 AM
- */
 
 class MicroApiTccTransaction
 {

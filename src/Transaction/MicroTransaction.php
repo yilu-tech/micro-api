@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lishu
- * Date: 2018/11/20
- * Time: 6:47 PM
- */
 
 namespace YiluTech\MicroApi\Transaction;
 
